@@ -80,18 +80,13 @@ gltfLoader.load('./models/disk.gltf', gltf => {
     let innerRoot = new THREE.Group()
     innerRoot.add(model_lvl3)
 
-    /* const folder = gui.addFolder("inner")
-    folder.add(innerRoot.rotation,'x').min(0).max(3).step(0.01).name('rotation X')
-    folder.add(innerRoot.rotation,'y').min(0).max(3).step(0.01).name('rotation Y')
-    folder.add(innerRoot.rotation,'z').min(0).max(3).step(0.01).name('rotation Z')
+    const folder = gui.addFolder("inner")
+    folder.add(root.rotation,'y').min(0).max(3).step(0.01).name('rotation y')
+    
 
-    folder.add(innerRoot.position,'x').min(-3).max(3).step(0.001).name('position X')
-    folder.add(innerRoot.position,'y').min(-3).max(3).step(0.001).name('position Y')
-    folder.add(innerRoot.position,'z').min(-3).max(3).step(0.001).name('position Z') */
+    //innerRoot.rotation.y = 0.18
 
-    innerRoot.rotation.y = 0.18
-
-    innerRoot.position.x = 0.005
+    //innerRoot.position.x = 0.005
    
 
     root.rotation.y = 0.34
