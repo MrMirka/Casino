@@ -76,13 +76,30 @@ gltfLoader.load('./models/disk.gltf', gltf => {
     screen_mesh = model_lvl2
     root.add(screen_mesh)
 
-    const folder = gui.addFolder("camera")
-    folder.add(root.rotation,'y').min(0).max(3).step(0.01).name('position X')
+    
+    let innerRoot = new THREE.Group()
+    innerRoot.add(model_lvl3)
 
-    root.rotation.y = 0.26
+    /* const folder = gui.addFolder("inner")
+    folder.add(innerRoot.rotation,'x').min(0).max(3).step(0.01).name('rotation X')
+    folder.add(innerRoot.rotation,'y').min(0).max(3).step(0.01).name('rotation Y')
+    folder.add(innerRoot.rotation,'z').min(0).max(3).step(0.01).name('rotation Z')
+
+    folder.add(innerRoot.position,'x').min(-3).max(3).step(0.001).name('position X')
+    folder.add(innerRoot.position,'y').min(-3).max(3).step(0.001).name('position Y')
+    folder.add(innerRoot.position,'z').min(-3).max(3).step(0.001).name('position Z') */
+
+    innerRoot.rotation.y = 0.18
+
+    innerRoot.position.x = 0.005
+   
+
+    root.rotation.y = 0.34
+    root.position.x = -0.021
+
     scene.add(root)
     scene.add(model_lvl1)
-    scene.add(model_lvl3)
+    scene.add(innerRoot)
    
     
 })
