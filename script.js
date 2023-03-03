@@ -17,6 +17,8 @@ var gui = new dat.GUI()
 
 var root = new THREE.Group()
 
+const frustumSize = 2.9
+
 
 var screen_mesh
 
@@ -28,9 +30,18 @@ const canvas = document.querySelector('canvas.webgl')
 scene  = new THREE.Scene()
 
 //camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 100 )
-camera = new THREE.OrthographicCamera( window.innerWidth / - 470, window.innerWidth / 470, window.innerHeight / 470, window.innerHeight / - 470, 1, 1000 );
+/* camera = new THREE.OrthographicCamera( 
+                                        window.innerWidth / - camera_resolution, 
+                                        window.innerWidth / camera_resolution,
+                                        window.innerHeight / camera_resolution,
+                                        window.innerHeight / - camera_resolution,
+                                        1, 1000 ); */
 
-camera.position.z = 100
+const aspect = window.innerWidth / window.innerHeight
+camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 1, 1000 )                                 
+camera.position.z = 3
+camera.position.x = 0
+camera.position.y = 0.035
 
 
 /* 
@@ -43,7 +54,7 @@ folder.add(camera.position,'z').min(-3000).max(3000).step(0.01).name('position Z
 
 scene.add(camera)
 
-renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true } )
+renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true, alpha:true } )
 renderer.setPixelRatio( window.devicePixelRatio )
 renderer.physicallyCorrectLights = true
 renderer.toneMapping = THREE.ACESFilmicToneMapping
@@ -72,6 +83,7 @@ gltfLoader.load('./models/disk.gltf', gltf => {
     let model_lvl4 = gltf.scene.children[3]
     let model_lvl5 = gltf.scene.children[4]
     let model_lvl6 = gltf.scene.children[5]
+    let model_lvl7 = gltf.scene.children[6]
 
 
     gltf.scene.scale.set(1,1,1)
@@ -82,8 +94,17 @@ gltfLoader.load('./models/disk.gltf', gltf => {
     let innerRoot = new THREE.Group()
     innerRoot.add(model_lvl3)
 
-    //const folder = gui.addFolder("inner")
-    //folder.add(model_lvl6.rotation,'z').min(-3).max(3).step(0.01).name('rotation z')
+   /*  const folder = gui.addFolder("inner")
+    folder.add(model_lvl7.position,'x').min(-3).max(3).step(0.01).name('rotation x')
+    folder.add(model_lvl7.position,'y').min(-3).max(3).step(0.01).name('rotation y')
+    folder.add(model_lvl7.position,'z').min(-3).max(3).step(0.01).name('rotation z')
+
+    folder.add(model_lvl7.scale,'x').min(-3).max(3).step(0.01).name('scale x')
+    folder.add(model_lvl7.scale,'y').min(-3).max(3).step(0.01).name('scale y')
+    folder.add(model_lvl7.scale,'z').min(-3).max(3).step(0.01).name('scale z') */
+
+    model_lvl7.position.set(0.8, -0.52, 0.47)
+    model_lvl7.scale.set(0.9, 1, 0.9)
    
 
     model_lvl4.position.set(0.258,0,0.12)
@@ -104,6 +125,7 @@ gltfLoader.load('./models/disk.gltf', gltf => {
     scene.add(model_lvl4)
     scene.add(model_lvl5)
     scene.add(model_lvl6)
+    scene.add(model_lvl7)
    
     
 })
@@ -133,7 +155,7 @@ rgbloader.load('./models/texture/env/env.pic', texture => {
 // });
 
 const light = new THREE.AmbientLight( 0x404040 );
-light.intensity = 10
+light.intensity = 20
 scene.add( light );
 
 
