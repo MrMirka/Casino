@@ -29,14 +29,6 @@ const canvas = document.querySelector('canvas.webgl')
 
 scene  = new THREE.Scene()
 
-//camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 100 )
-/* camera = new THREE.OrthographicCamera( 
-                                        window.innerWidth / - camera_resolution, 
-                                        window.innerWidth / camera_resolution,
-                                        window.innerHeight / camera_resolution,
-                                        window.innerHeight / - camera_resolution,
-                                        1, 1000 ); */
-
 const aspect = window.innerWidth / window.innerHeight
 camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 1, 1000 )                                 
 camera.position.z = 3
@@ -56,8 +48,9 @@ scene.add(camera)
 
 renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true, alpha:true } )
 renderer.setPixelRatio( window.devicePixelRatio )
-renderer.physicallyCorrectLights = true
-renderer.toneMapping = THREE.ACESFilmicToneMapping
+//renderer.physicallyCorrectLights = true
+//renderer.toneMapping = THREE.ACESFilmicToneMapping
+renderer.toneMapping = THREE.sRGBEncoding
 renderer.setSize( window.innerWidth, window.innerHeight )
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
 renderer.shadowMap.enabled = true
@@ -85,6 +78,14 @@ gltfLoader.load('./models/disk.gltf', gltf => {
     let model_lvl6 = gltf.scene.children[5]
     let model_lvl7 = gltf.scene.children[6]
 
+    model_lvl7.traverse( function( node ) {
+        if (node.material) {
+            node.material.map.encoding = THREE.LinearEncoding
+            scene.add(model_lvl7)
+            
+        }
+    })
+
 
     gltf.scene.scale.set(1,1,1)
     screen_mesh = model_lvl2
@@ -93,15 +94,6 @@ gltfLoader.load('./models/disk.gltf', gltf => {
     
     let innerRoot = new THREE.Group()
     innerRoot.add(model_lvl3)
-
-   /*  const folder = gui.addFolder("inner")
-    folder.add(model_lvl7.position,'x').min(-3).max(3).step(0.01).name('rotation x')
-    folder.add(model_lvl7.position,'y').min(-3).max(3).step(0.01).name('rotation y')
-    folder.add(model_lvl7.position,'z').min(-3).max(3).step(0.01).name('rotation z')
-
-    folder.add(model_lvl7.scale,'x').min(-3).max(3).step(0.01).name('scale x')
-    folder.add(model_lvl7.scale,'y').min(-3).max(3).step(0.01).name('scale y')
-    folder.add(model_lvl7.scale,'z').min(-3).max(3).step(0.01).name('scale z') */
 
     model_lvl7.position.set(0.8, -0.52, 0.47)
     model_lvl7.scale.set(0.9, 1, 0.9)
@@ -125,7 +117,7 @@ gltfLoader.load('./models/disk.gltf', gltf => {
     scene.add(model_lvl4)
     scene.add(model_lvl5)
     scene.add(model_lvl6)
-    scene.add(model_lvl7)
+    //scene.add(model_lvl7)
    
     
 })
@@ -139,23 +131,12 @@ rgbloader.load('./models/texture/env/env.pic', texture => {
     //scene.environment = texture
  })
  
-
- const pointLight = new THREE.PointLight( 0xffffff, 16, 100 )
- pointLight.position.set( 1, 1, 1 )
- pointLight.castShadow = true
- pointLight.shadow.normalBias = 0.05
- //scene.add( pointLight )
- 
- const sphereSize = 0.2
- const pointLightHelper = new THREE.PointLightHelper( pointLight, sphereSize );
- //scene.add( pointLightHelper )
-
 // document.addEventListener('mousedown',() => {
 //     changeMaterial(urls)
 // });
 
 const light = new THREE.AmbientLight( 0x404040 );
-light.intensity = 20
+light.intensity = 5
 scene.add( light );
 
 
