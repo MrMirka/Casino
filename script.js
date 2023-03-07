@@ -86,6 +86,14 @@ gltfLoader.load('./models/disk.gltf', gltf => {
         }
     })
 
+    const folder = gui.addFolder("camera")
+    folder.add(model_lvl1.position,'x').min(-3).max(3).step(0.01).name('position X')
+    folder.add(model_lvl1.position,'y').min(-3).max(3).step(0.01).name('position Y')
+    folder.add(model_lvl1.position,'z').min(-3).max(3).step(0.01).name('position Z')
+
+    model_lvl1.position.set(0.232,0,0)
+    model_lvl1.scale.set(0.968,1,1)
+
 
     gltf.scene.scale.set(1,1,1)
     screen_mesh = model_lvl2
