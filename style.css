@@ -4,14 +4,7 @@ body
     height: 100%;
     background-image: url('./img/Landing_Casino.jpg');
     background-size: cover;
-   
     margin: 0;
-    overflow: hidden;
-   
-}
-
-.webgl
-{
-    outline: none;
+    outline: hidden;
 }
 

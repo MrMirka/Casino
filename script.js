@@ -130,14 +130,7 @@ gltfLoader.load('./models/disk.gltf', gltf => {
     
 })
 
-rgbloader.load('./models/texture/env/env.pic', texture => {
-    texture.encoding = THREE.sRGBEncoding
-    texture.mapping = THREE.EquirectangularRefractionMapping
-    texture.wrapS = THREE.RepeatWrapping
-    texture.wrapP = THREE.RepeatWrapping
-    texture.repeat.set( 1, 1 )
-    //scene.environment = texture
- })
+
  
 // document.addEventListener('mousedown',() => {
 //     changeMaterial(urls)
