@@ -6,16 +6,26 @@ canvas.height = window.innerHeight
 const vanishPointX = canvas.width / 2
 const vanishPointY = canvas.height / 2
 
-const imgWheel = new Image()
-const imgWheel2 = new Image()
-imgWheel.src = "models/texture/red_white.png"
-imgWheel2.src = "models/texture/charakter.png"
-imgWheel.onload = function() {
-  imgWheel2.onload = function() {
-    motion()
-  }
-}
+let imgWheel = new Image()
+let character = new Image()
+let wheelBack = new Image()
+let ring = new Image()
+let innerDisk = new Image()
+let cursorOff = new Image()
 
+imgWheel.src = "models/texture/red_white.png"
+character.src = "models/texture/charakter.png"
+wheelBack.src = "models/texture/wheel_back.png"
+ring.src = "models/texture/ring.png"
+innerDisk.src = "models/texture/inner_disk.png"
+cursorOff.src = "models/texture/cursor_off.png"
+
+let imgArray = [imgWheel, character, wheelBack, ring, innerDisk]
+
+
+loadImagesWithCallback(imgArray, (isLoad) => {
+  motion()
+});
 
 
 
@@ -64,11 +74,39 @@ imgWheel.onload = function() {
 
   function motion() {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    addImage(imgWheel, 0, 0, 0, 1, false)
-    addImage(imgWheel2, 0, 0, 0, 0.2, true)
+    addImage(wheelBack, 0, 0, 0, 0.286, true)
+    addImage(imgWheel, 19, 9, 0, 1, false)
+    addImage(ring, 19, 10, 2, 0.257, true)
+    addImage(innerDisk, 0, 0, 0, 0.257, true)
+    addImage(cursorOff, 0, 12, -wheelBack.height * 0.256 / 2, 0.257, true)
+    addImage(character, 0, 165,  (canvas.height - character.height * 0.183) / 2, 0.183, true)
     requestAnimationFrame(motion)
   }
 
   function degToRad(degrees) {
     return degrees * (Math.PI / 180)
+  }
+
+  function loadImage(img) {
+    return new Promise((resolve, reject) => {
+      img.onload = () => resolve(img)
+      img.onerror = reject
+    })
+  }
+
+  function loadImagesWithCallback(srcArray, callback) {
+    let isLoad = false
+    let counter = 0;
+  
+    srcArray.forEach((src) => {
+      loadImage(src)
+        .then(() => {
+          counter++
+          if (counter === srcArray.length) {
+             isLoad = true
+            callback( isLoad )
+          }
+        })
+        .catch((err) => console.log(err));
+    });
   }
