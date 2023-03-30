@@ -75,13 +75,11 @@ function addImage(image, angle, translateX, translateY, scale, stat) {
 function motion() {
   ctx.clearRect(0, 0, canvas.width, canvas.height)
   addImage(wheelBack, 0, 0, 0, 0.286, true)
-  //addImage(imgWheel, 19, 9, 0, 1, false)
-  addImageWithMotion(imgWheel, 19, 9, 0, 1, false)
+  addImage(imgWheel, 19, 9, 0, 1, false)
   addImage(ring, 19, 10, 2, 0.257, true)
   addImage(innerDisk, 0, 0, 0, 0.257, true)
   addImage(cursorOff, 0, 12, -wheelBack.height * 0.256 / 2, 0.257, true)
   addImage(character, 0, 165,  (canvas.height - character.height * 0.183) / 2, 0.183, true)
-
   requestAnimationFrame(motion)
 }
 
@@ -112,78 +110,3 @@ function loadImagesWithCallback(srcArray, callback) {
       .catch((err) => console.log(err));
   });
 }
-
-function drawMotionBlurImage(image, x, y, rotation) {
-  const blurSteps = 10; // Количество шагов размытия
-  const blurAlpha = 0.1; // Прозрачность для каждого шага размытия
-
-  ctx.save();
-  ctx.translate( x , y );
-
-  for (let i = 0; i < blurSteps; i++) {
-      ctx.save();
-      ctx.rotate(rotation - i * 0.01);
-      ctx.globalAlpha = blurAlpha;
-
-      // Рисуем изображение с учетом размытия
-      ctx.drawImage(image, -image.width / 2, -image.height / 2, image.width  , image.height );
-      ctx.restore();
-  }
-
-  ctx.restore();
-}
-
-function addImageWithMotion(image, angle, translateX, translateY, scale, stat) {
-  const imgWidth = image.width * scale
-  const imgHeight = image.height * scale
-
-  let yAngleInRadians = degToRad(angle) 
-  let zAngleInRadians = 0
-
-  let blurSteps = 10; 
-  let blurAlpha = 0.1; 
-
-  // Update the rotation angle along the Z-axis
-  if (!stat) {
-    zAngleInRadians = performance.now() / 300
-  }else {
-    zAngleInRadians = 0
-  }
-  
-  // Set the perspective transformation with the initial Y-axis rotation
-  const cosY = Math.cos(yAngleInRadians)
-  const sinY = Math.sin(yAngleInRadians)
-
-  ctx.save()
-  for (let i = 0; i < blurSteps; i++) {
-    blurAlpha = 1 / i
-    
-    ctx.setTransform(
-      cosY,    // a
-      0,       // b (no rotation along the X-axis)
-      0,       // c (no rotation along the Z-axis)
-      1,       // d (no scaling)
-      vanishPointX * (1 - cosY), // e center point
-      vanishPointY,              // f center point
-    )
-
-    // Apply the additional Z-axis rotation using the center of the image as the transformation point
-    ctx.translate(vanishPointX + translateX, 0 + translateY )
-  
-    ctx.rotate(zAngleInRadians - i * 0.02)
-    ctx.translate(-vanishPointX, -vanishPointY )
-    ctx.globalAlpha = blurAlpha;
-    
-
-    ctx.drawImage(
-      image,
-      vanishPointX - imgWidth / 2,  
-      vanishPointY - imgHeight / 2, 
-      imgWidth,                     
-      imgHeight                     
-    )
-    ctx.restore();
-  }
-    ctx.restore();
-    ctx.globalAlpha = 1
-} 
