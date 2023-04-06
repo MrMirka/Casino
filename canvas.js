@@ -22,13 +22,14 @@ cursorOff.src = "models/texture/cursor_off.png"
 
 let imgArray = [imgWheel, character, wheelBack, ring, innerDisk]
 
+let isAnimation = true
+let currentRotation = 0
+let rotationSpeed = 0.05
+let targetDegree = 10
 
 loadImagesWithCallback(imgArray, (isLoad) => {
   motion()
 });
-
-
-
 
 
 function addImage(image, angle, translateX, translateY, scale, stat) {
@@ -75,13 +76,18 @@ function addImage(image, angle, translateX, translateY, scale, stat) {
 function motion() {
   ctx.clearRect(0, 0, canvas.width, canvas.height)
   addImage(wheelBack, 0, 0, 0, 0.286, true)
-  //addImage(imgWheel, 19, 9, 0, 1, false)
-  addImageWithMotion(imgWheel, 19, 9, 0, 1, false)
+  if(currentRotation < targetDegree) {
+    isAnimation = true
+  } else {
+    isAnimation = false
+  }
+  addImageWithMotion(imgWheel, 19, 9, 0, 1, isAnimation, currentRotation)
   addImage(ring, 19, 10, 2, 0.257, true)
   addImage(innerDisk, 0, 0, 0, 0.257, true)
   addImage(cursorOff, 0, 12, -wheelBack.height * 0.256 / 2, 0.257, true)
   addImage(character, 0, 165,  (canvas.height - character.height * 0.183) / 2, 0.183, true)
 
+  currentRotation += rotationSpeed
   requestAnimationFrame(motion)
 }
 
@@ -133,7 +139,7 @@ function drawMotionBlurImage(image, x, y, rotation) {
   ctx.restore();
 }
 
-function addImageWithMotion(image, angle, translateX, translateY, scale, stat) {
+function addImageWithMotion(image, angle, translateX, translateY, scale, isAnimation, lCurrentRotation) {
   const imgWidth = image.width * scale
   const imgHeight = image.height * scale
 
@@ -142,10 +148,11 @@ function addImageWithMotion(image, angle, translateX, translateY, scale, stat) {
 
   let blurSteps = 10; 
   let blurAlpha = 0.1; 
-
+  console.log(lCurrentRotation)
   // Update the rotation angle along the Z-axis
-  if (!stat) {
-    zAngleInRadians = performance.now() / 300
+  if (isAnimation) {
+    //zAngleInRadians = performance.now() / 300
+    zAngleInRadians = lCurrentRotation
   }else {
     zAngleInRadians = 0
   }
