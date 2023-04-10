@@ -12,6 +12,7 @@ let wheelBack = new Image()
 let ring = new Image()
 let innerDisk = new Image()
 let cursorOff = new Image()
+let isAnimate = false
 
 imgWheel.src = "models/texture/red_white.png"
 character.src = "models/texture/charakter.png"
@@ -24,8 +25,10 @@ let imgArray = [imgWheel, character, wheelBack, ring, innerDisk]
 
 let isAnimation = true
 let currentRotation = 0
-let rotationSpeed = 0.05
-let targetDegree = 10
+let rotationSpeed = 0.1
+let targetDegree = Math.PI * 2 + 0.1
+let blurSteps = 1; 
+let blurMarker = blurSteps * rotationSpeed
 
 loadImagesWithCallback(imgArray, (isLoad) => {
   motion()
@@ -74,21 +77,43 @@ function addImage(image, angle, translateX, translateY, scale, stat) {
 
 
 function motion() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
-  addImage(wheelBack, 0, 0, 0, 0.286, true)
-  if(currentRotation < targetDegree) {
-    isAnimation = true
-  } else {
-    isAnimation = false
-  }
-  addImageWithMotion(imgWheel, 19, 9, 0, 1, isAnimation, currentRotation)
-  addImage(ring, 19, 10, 2, 0.257, true)
-  addImage(innerDisk, 0, 0, 0, 0.257, true)
-  addImage(cursorOff, 0, 12, -wheelBack.height * 0.256 / 2, 0.257, true)
-  addImage(character, 0, 165,  (canvas.height - character.height * 0.183) / 2, 0.183, true)
+  
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    addImage(wheelBack, 0, 0, 0, 0.286, true)
+    if(currentRotation < targetDegree) {
+      isAnimation = true
+    } else {
+      isAnimation = false
+      rotationSpeed = 0
+    }
+    
+    addImageWithMotion(imgWheel, 19, 9, 0, 1, isAnimation, currentRotation)
+    addImage(ring, 19, 10, 2, 0.257, true)
+    addImage(innerDisk, 0, 0, 0, 0.257, true)
+    addImage(cursorOff, 0, 12, -wheelBack.height * 0.256 / 2, 0.257, true)
+    addImage(character, 0, 165,  (canvas.height - character.height * 0.183) / 2, 0.183, true)
 
-  currentRotation += rotationSpeed
-  requestAnimationFrame(motion)
+
+    if(isAnimate) {
+      
+
+      if (targetDegree - currentRotation < blurMarker && blurSteps > 1) {
+        blurSteps -= 1
+      } else if (blurSteps < 20) {
+        blurSteps += 1
+        blurMarker = blurSteps * rotationSpeed
+
+      }
+      currentRotation += rotationSpeed
+  }
+    
+    
+    
+    if (currentRotation <= targetDegree) {
+      requestAnimationFrame(motion)
+    }
+  
+
 }
 
 function degToRad(degrees) {
@@ -146,7 +171,7 @@ function addImageWithMotion(image, angle, translateX, translateY, scale, isAnima
   let yAngleInRadians = degToRad(angle) 
   let zAngleInRadians = 0
 
-  let blurSteps = 10; 
+  //let blurSteps = 20; 
   let blurAlpha = 0.1; 
   console.log(lCurrentRotation)
   // Update the rotation angle along the Z-axis
@@ -154,7 +179,7 @@ function addImageWithMotion(image, angle, translateX, translateY, scale, isAnima
     //zAngleInRadians = performance.now() / 300
     zAngleInRadians = lCurrentRotation
   }else {
-    zAngleInRadians = 0
+    zAngleInRadians = currentRotation
   }
   
   // Set the perspective transformation with the initial Y-axis rotation
@@ -177,7 +202,7 @@ function addImageWithMotion(image, angle, translateX, translateY, scale, isAnima
     // Apply the additional Z-axis rotation using the center of the image as the transformation point
     ctx.translate(vanishPointX + translateX, 0 + translateY )
   
-    ctx.rotate(zAngleInRadians - i * 0.02)
+    ctx.rotate(zAngleInRadians - i * 0.01)
     ctx.translate(-vanishPointX, -vanishPointY )
     ctx.globalAlpha = blurAlpha;
     
@@ -194,3 +219,10 @@ function addImageWithMotion(image, angle, translateX, translateY, scale, isAnima
     ctx.restore();
     ctx.globalAlpha = 1
 } 
+
+document.addEventListener('DOMContentLoaded', function () {
+  document.body.addEventListener('click', function () {
+      // Ваш код для листания или других действий
+      isAnimate = true
+  });
+});
