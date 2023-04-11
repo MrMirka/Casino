@@ -12,21 +12,25 @@ let wheelBack = new Image()
 let ring = new Image()
 let innerDisk = new Image()
 let cursorOff = new Image()
+let lightPart1 = new Image()
+let lightPart2 = new Image()
 let isAnimate = false
 
 imgWheel.src = "models/texture/red_white.png"
 character.src = "models/texture/charakter.png"
-wheelBack.src = "models/texture/wheel_back.png"
+wheelBack.src = "img/wheel_back.png"
 ring.src = "models/texture/ring.png"
 innerDisk.src = "models/texture/inner_disk.png"
 cursorOff.src = "models/texture/cursor_off.png"
+lightPart1.src = "img/light_part1.png"
+lightPart2.src = "img/light_part2.png"
 
 let imgArray = [imgWheel, character, wheelBack, ring, innerDisk]
 
 let isAnimation = true
 let currentRotation = 0
 let rotationSpeed = 0.1
-let targetDegree = Math.PI * 2 + 0.1
+let targetDegree = Math.PI * 6 + 0.1
 let blurSteps = 1; 
 let blurMarker = blurSteps * rotationSpeed
 
@@ -35,7 +39,8 @@ loadImagesWithCallback(imgArray, (isLoad) => {
 });
 
 
-function addImage(image, angle, translateX, translateY, scale, stat) {
+function addImage(image, angle, translateX, translateY, scale, stat, globA) {
+  ctx.globalAlpha = globA
   const imgWidth = image.width * scale
   const imgHeight = image.height * scale
 
@@ -65,7 +70,7 @@ function addImage(image, angle, translateX, translateY, scale, stat) {
   ctx.translate(vanishPointX + translateX, 0 + translateY )
   ctx.rotate(zAngleInRadians)
   ctx.translate(-vanishPointX, -vanishPointY )
-
+  
   ctx.drawImage(
     image,
     vanishPointX - imgWidth / 2,  
@@ -73,13 +78,19 @@ function addImage(image, angle, translateX, translateY, scale, stat) {
     imgWidth,                     
     imgHeight                     
   )
+  
+  //ctx.globalAlpha = globA
+  
 } 
 
 
 function motion() {
-  
+    let delta1 = Math.abs(Math.sin(performance.now() / 100))
+    let delta2 = Math.abs(Math.cos(performance.now() / 100))
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    addImage(wheelBack, 0, 0, 0, 0.286, true)
+
+    addImage(wheelBack, 0, 0, 0, 0.283, true,1)
+
     if(currentRotation < targetDegree) {
       isAnimation = true
     } else {
@@ -88,10 +99,15 @@ function motion() {
     }
     
     addImageWithMotion(imgWheel, 19, 9, 0, 1, isAnimation, currentRotation)
-    addImage(ring, 19, 10, 2, 0.257, true)
-    addImage(innerDisk, 0, 0, 0, 0.257, true)
-    addImage(cursorOff, 0, 12, -wheelBack.height * 0.256 / 2, 0.257, true)
-    addImage(character, 0, 165,  (canvas.height - character.height * 0.183) / 2, 0.183, true)
+
+    addImage(ring, 19, 10, 2, 0.257, true,1)
+    addImage(innerDisk, 0, 0, 0, 0.257, true,1)
+    addImage(cursorOff, 0, 12, -wheelBack.height * 0.256 / 2, 0.257, true,1)
+    addImage(lightPart1, 0, 0, 0, 0.283, true, delta1)
+    addImage(lightPart2, 0, 0, 0, 0.283, true, delta2)
+    
+    addImage(character, 0, 165,  (canvas.height - character.height * 0.183) / 2, 0.183, true,1)
+    
 
 
     if(isAnimate) {
@@ -144,25 +160,7 @@ function loadImagesWithCallback(srcArray, callback) {
   });
 }
 
-function drawMotionBlurImage(image, x, y, rotation) {
-  const blurSteps = 10; // Количество шагов размытия
-  const blurAlpha = 0.1; // Прозрачность для каждого шага размытия
 
-  ctx.save();
-  ctx.translate( x , y );
-
-  for (let i = 0; i < blurSteps; i++) {
-      ctx.save();
-      ctx.rotate(rotation - i * 0.01);
-      ctx.globalAlpha = blurAlpha;
-
-      // Рисуем изображение с учетом размытия
-      ctx.drawImage(image, -image.width / 2, -image.height / 2, image.width  , image.height );
-      ctx.restore();
-  }
-
-  ctx.restore();
-}
 
 function addImageWithMotion(image, angle, translateX, translateY, scale, isAnimation, lCurrentRotation) {
   const imgWidth = image.width * scale
@@ -173,7 +171,7 @@ function addImageWithMotion(image, angle, translateX, translateY, scale, isAnima
 
   //let blurSteps = 20; 
   let blurAlpha = 0.1; 
-  console.log(lCurrentRotation)
+  
   // Update the rotation angle along the Z-axis
   if (isAnimation) {
     //zAngleInRadians = performance.now() / 300
@@ -217,12 +215,12 @@ function addImageWithMotion(image, angle, translateX, translateY, scale, isAnima
     ctx.restore();
   }
     ctx.restore();
-    ctx.globalAlpha = 1
+    
 } 
 
 document.addEventListener('DOMContentLoaded', function () {
   document.body.addEventListener('click', function () {
-      // Ваш код для листания или других действий
       isAnimate = true
   });
 });
+

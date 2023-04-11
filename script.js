@@ -25,7 +25,7 @@ var screen_mesh
 const gltfLoader = new GLTFLoader()
 const rgbloader = new RGBELoader()
 
-const canvas = document.querySelector('canvas.webgl')
+const canvas = document.querySelector('canvas')
 
 scene  = new THREE.Scene()
 
@@ -144,10 +144,11 @@ scene.add( light );
 animate()
 
 function animate(){
-    const elapsedTime = clock.getElapsedTime()
+    //const elapsedTime = clock.getElapsedTime()
+    const elapsedTime = Date.now() * 0.001;
    // orbitControl.update()
 
-    degree += 0.02
+    degree += 0.02 * elapsedTime
 
    if(screen_mesh != undefined) {
     screen_mesh.rotation.y += 0.02
