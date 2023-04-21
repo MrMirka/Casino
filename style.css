@@ -8,3 +8,7 @@ body
     outline: hidden;
 }
 
+canvas {
+    transform: translateZ(0);
+}
+
