@@ -17,17 +17,12 @@ let lightPart2 = new Image()
 let isAnimate = false
 let wheelBlock
 let angleDelta = 19
-if(canvas.width > canvas.height) {
+
   wheelBlock = {
     width: canvas.width * 0.7,
     height: canvas.height * 0.7
   }
-}else {
-  wheelBlock = {
-    width: canvas.width * 0.5,
-    height: canvas.height * 0.5
-  }
-}
+
  
 
 
@@ -47,7 +42,7 @@ let imgArray = [imgWheel, character, wheelBack, ring, innerDisk]
 let isAnimation = true
 let currentRotation = 0
 let rotationSpeed = 0.1
-let targetDegree = degToRad(360)  + 0.1
+let targetDegree = degToRad(3600)  + 0.1
 let blurSteps = 1; 
 let blurMarker = blurSteps * rotationSpeed
 
