@@ -42,7 +42,7 @@ let imgArray = [imgWheel, character, wheelBack, ring, innerDisk]
 let isAnimation = true
 let currentRotation = 0
 let rotationSpeed = 0.1
-let targetDegree = degToRad(720)  + 0.1
+let targetDegree = degToRad(780)  + 0.1
 let blurSteps = 1; 
 let blurMarker = blurSteps * rotationSpeed
 
