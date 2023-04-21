@@ -15,26 +15,9 @@ let cursorOff = new Image()
 let lightPart1 = new Image()
 let lightPart2 = new Image()
 let isAnimate = false
-let wheelBlock
-
-if(canvas.width > canvas.height) {
-  wheelBlock = {
-    width: canvas.width * 0.7,
-    height: canvas.height * 0.7
-  }
-}else {
-  wheelBlock = {
-    width: canvas.width * 0.5,
-    height: canvas.height * 0.5
-  }
-}
- 
-
 
 imgWheel.src = "img/red_white2.png"
 character.src = "img/charakter.png"
-character.width = wheelBlock.height 
-character.height = wheelBlock.height 
 wheelBack.src = "img/wheel_back.png"
 ring.src = "img/ring.png"
 innerDisk.src = "img/inner_disk.png"
@@ -51,8 +34,12 @@ let targetDegree = degToRad(360)  + 0.1
 let blurSteps = 1; 
 let blurMarker = blurSteps * rotationSpeed
 
+let scaleParam = {
+  width: canvas.width,
+  height: canvas.height
+}
 
-
+const blockSize = scaleParam.height * 
 
 loadImagesWithCallback(imgArray, (isLoad) => {
   motion()
@@ -61,10 +48,8 @@ loadImagesWithCallback(imgArray, (isLoad) => {
 
 function addImage(image, angle, translateX, translateY, scale, stat, globA) {
   ctx.globalAlpha = globA
-  const imgWidth =  wheelBlock.height * scale
-  const imgHeight =  wheelBlock.height * scale
-
-  
+  const imgWidth = image.width * scale
+  const imgHeight = image.height * scale
 
   let yAngleInRadians = degToRad(angle) 
   let zAngleInRadians = 0
@@ -107,12 +92,11 @@ function addImage(image, angle, translateX, translateY, scale, stat, globA) {
 
 
 function motion() {
-    //ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.clearRect(0, 0, 4000, 4000)
     let delta1 = Math.abs(Math.sin(performance.now() / 100))
     let delta2 = Math.abs(Math.cos(performance.now() / 100))
-    
-    addImage(wheelBack, 0, 0, 0, 1, true,1)
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+    addImage(wheelBack, 0, 0, 0, 0.283, true,1)
 
     if(currentRotation < targetDegree) {
       isAnimation = true
@@ -121,16 +105,16 @@ function motion() {
       rotationSpeed = 0
     }
     
-    addImageWithMotion(imgWheel, 19, 9, 0, 0.87, isAnimation, currentRotation)
+    addImageWithMotion(imgWheel, 19, 9, 0, 1, isAnimation, currentRotation)
 
-    addImage(ring, 19, canvas.width  * 0.008, 2, 0.91, true,1)
-    addImage(innerDisk, 0, 10, 0, 0.4, true,1)
-    addImage(cursorOff, 0, canvas.width * 0.01, -wheelBlock.height * 0.45, 0.1, true,1)
-    addImage(lightPart1, 0, 0, 0, 1, true, delta1)
-    addImage(lightPart2, 0, 0, 0, 1, true, delta2)
+    addImage(ring, 19, 10, 2, 0.257, true,1)
+    addImage(innerDisk, 0, 0, 0, 0.257, true,1)
+    addImage(cursorOff, 0, 12, -wheelBack.height * 0.256 / 2, 0.257, true,1)
+    addImage(lightPart1, 0, 0, 0, 0.283, true, delta1)
+    addImage(lightPart2, 0, 0, 0, 0.283, true, delta2)
     
-    addImage(character, 0, character.height * 0.4,  (canvas.height - character.height) / 2, 1, true,1)
-    
+    addImage(character, 0, 165,  (canvas.height - character.height * 0.183) / 2, 0.183, true,1)
+
     if(isAnimate) {
       if (targetDegree - currentRotation < blurMarker && blurSteps > 1) {
         blurSteps -= 1
@@ -144,6 +128,8 @@ function motion() {
     if (currentRotation <= targetDegree) {
       requestAnimationFrame(motion)
     }
+  
+
 }
 
 function degToRad(degrees) {
@@ -177,8 +163,8 @@ function loadImagesWithCallback(srcArray, callback) {
 
 
 function addImageWithMotion(image, angle, translateX, translateY, scale, isAnimation, lCurrentRotation) {
-  const imgWidth =  wheelBlock.height * scale
-  const imgHeight =  wheelBlock.height * scale
+  const imgWidth = image.width * scale
+  const imgHeight = image.height * scale
 
   let yAngleInRadians = degToRad(angle) 
   let zAngleInRadians = 0
