@@ -16,7 +16,7 @@ let lightPart1 = new Image()
 let lightPart2 = new Image()
 let isAnimate = false
 let wheelBlock
-
+let angleDelta = 19
 if(canvas.width > canvas.height) {
   wheelBlock = {
     width: canvas.width * 0.7,
@@ -121,9 +121,9 @@ function motion() {
       rotationSpeed = 0
     }
     
-    addImageWithMotion(imgWheel, 19, 9, 0, 0.87, isAnimation, currentRotation)
+    addImageWithMotion(imgWheel, 19, 7, 0, 0.87, isAnimation, currentRotation)
 
-    addImage(ring, 19, canvas.width  * 0.008, 2, 0.91, true,1)
+    addImage(ring, 0, 0, 2, 1, true,1)
     addImage(innerDisk, 0, 10, 0, 0.4, true,1)
     addImage(cursorOff, 0, canvas.width * 0.01, -wheelBlock.height * 0.45, 0.1, true,1)
     addImage(lightPart1, 0, 0, 0, 1, true, delta1)
