@@ -50,7 +50,7 @@ function wheelInTaregt(){
 
 //Задаем угол вращения
 function setTarget(degree){
-  targetDegree = degToRad(degree)  + 0.1
+  targetDegree = degToRad(degree)  
 }
 
 
@@ -206,7 +206,7 @@ function setScale(image, scale) {
 
 document.addEventListener('DOMContentLoaded', function () {
   document.body.addEventListener('click', function () {
-      setTarget(1780)
+      setTarget(420)
       isAnimate = true
       
   });
