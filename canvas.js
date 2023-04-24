@@ -18,7 +18,7 @@ let isAnimate = false
 let wheelBlock
 let angleDelta = 19
 
-const rotationSpeed = 0.1//Скорость вращения колеса
+let rotationSpeed = 0.03//Скорость вращения колеса
 let targetDegree = 0  //Угол на который врашаем
 
 wheelBlock = {
@@ -106,7 +106,9 @@ function motion() {
     if(isAnimate) {
       if (targetDegree - currentRotation < blurMarker && blurSteps > 1) {
         blurSteps -= 1
+        rotationSpeed -= 0.002
       } else if (blurSteps < 20) {
+        rotationSpeed += 0.002
         blurSteps += 1
         blurMarker = blurSteps * rotationSpeed
       }
@@ -204,7 +206,7 @@ function setScale(image, scale) {
 
 document.addEventListener('DOMContentLoaded', function () {
   document.body.addEventListener('click', function () {
-      setTarget(780)
+      setTarget(1780)
       isAnimate = true
       
   });
