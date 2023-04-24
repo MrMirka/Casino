@@ -1,5 +1,5 @@
 const canvas = document.getElementById("canvas")
-const ctx = canvas.getContext("2d")
+const ctx = canvas.getContext("2d",{ antialias: true })
 canvas.width = window.innerWidth
 canvas.height = window.innerHeight
 
@@ -18,13 +18,13 @@ let isAnimate = false
 let wheelBlock
 let angleDelta = 19
 
-  wheelBlock = {
-    width: canvas.width * 0.7,
-    height: canvas.height * 0.7
-  }
+const rotationSpeed = 0.1//Скорость вращения колеса
+let targetDegree = 0  //Угол на который врашаем
 
- 
-
+wheelBlock = {
+  width: canvas.width * 0.7,
+  height: canvas.height * 0.7
+}
 
 imgWheel.src = "img/red_white2.png"
 character.src = "img/charakter.png"
@@ -37,95 +37,72 @@ cursorOff.src = "img/cursor_off.png"
 lightPart1.src = "img/light_part1.png"
 lightPart2.src = "img/light_part2.png"
 
-let imgArray = [imgWheel, character, wheelBack, ring, innerDisk]
-
+let imgArray = [imgWheel, character, wheelBack, ring, innerDisk, lightPart1, lightPart2, cursorOff]
 let isAnimation = true
 let currentRotation = 0
-let rotationSpeed = 0.1
-let targetDegree = degToRad(780)  + 0.1
 let blurSteps = 1; 
 let blurMarker = blurSteps * rotationSpeed
 
+//Каллбек на остановку колеса
+function wheelInTaregt(){
+  console.log("Сектор ПРИЗ на барабане!")
+}
+
+//Задаем угол вращения
+function setTarget(degree){
+  targetDegree = degToRad(degree)  + 0.1
+}
 
 
 
+//Калбек на загрузку всех изображений
 loadImagesWithCallback(imgArray, (isLoad) => {
+  setScale(imgWheel, 0.87)
+  setScale(character, 1)
+  setScale(wheelBack, 1)
+  setScale(ring, 1)
+  setScale(innerDisk, 0.4)
+  setScale(cursorOff, 0.1)
+  setScale(lightPart1, 1)
+  setScale(lightPart2, 1)
   motion()
 });
 
 
-function addImage(image, angle, translateX, translateY, scale, stat, globA) {
+function addImage(image, translateX, translateY, globA) {
   ctx.globalAlpha = globA
-  const imgWidth =  wheelBlock.height * scale
-  const imgHeight =  wheelBlock.height * scale
-
-  
-
-  let yAngleInRadians = degToRad(angle) 
-  let zAngleInRadians = 0
-
-  // Update the rotation angle along the Z-axis
-  if (!stat) {
-    zAngleInRadians = performance.now() / 300
-  }else {
-    zAngleInRadians = 0
-  }
-  
-  // Set the perspective transformation with the initial Y-axis rotation
-  const cosY = Math.cos(yAngleInRadians)
-  const sinY = Math.sin(yAngleInRadians)
-  ctx.setTransform(
-    cosY,    // a
-    0,       // b (no rotation along the X-axis)
-    0,       // c (no rotation along the Z-axis)
-    1,       // d (no scaling)
-    vanishPointX * (1 - cosY), // e center point
-    vanishPointY,              // f center point
-  )
+  ctx.setTransform(1, 0, 0, 1, 0,vanishPointY)
 
   // Apply the additional Z-axis rotation using the center of the image as the transformation point
   ctx.translate(vanishPointX + translateX, 0 + translateY )
-  ctx.rotate(zAngleInRadians)
   ctx.translate(-vanishPointX, -vanishPointY )
   
   ctx.drawImage(
     image,
-    vanishPointX - imgWidth / 2,  
-    vanishPointY - imgHeight / 2, 
-    imgWidth,                     
-    imgHeight                     
+    vanishPointX - image.width / 2,  
+    vanishPointY - image.height / 2, 
+    image.width,                     
+    image.height                     
   )
-  
-  //ctx.globalAlpha = globA
-  
 } 
 
 
 function motion() {
-    //ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.clearRect(0, 0, 4000, 4000)
-    let delta1 = Math.abs(Math.sin(performance.now() / 100))
-    let delta2 = Math.abs(Math.cos(performance.now() / 100))
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    let delta1 = Math.abs(Math.sin(performance.now() / 100)) //Alpha для фонариков
+    let delta2 = Math.abs(Math.cos(performance.now() / 100)) //Alpha для фонариков
     
-    addImage(wheelBack, 0, 0, 0, 1, true,1)
+    addImage(wheelBack, 0, 0 ,1)
+    addImageWithMotion(imgWheel, 19, 10, 0, currentRotation)
+    addImage(ring, 0, 2, 1)
+    addImage(innerDisk, 10, 0, 1)
+    addImage(cursorOff, canvas.width * 0.01, -wheelBlock.height * 0.45, 1)
+    addImage(lightPart1, 0, 0, delta1)
+    addImage(lightPart2, 0, 0, delta2)
+    addImage(character, character.height * 0.4,  (canvas.height - character.height) / 2, 1)
+    
 
-    if(currentRotation < targetDegree) {
-      isAnimation = true
-    } else {
-      isAnimation = false
-      rotationSpeed = 0
-    }
-    
-    addImageWithMotion(imgWheel, 19, 7, 0, 0.87, isAnimation, currentRotation)
-
-    addImage(ring, 0, 0, 2, 1, true,1)
-    addImage(innerDisk, 0, 10, 0, 0.4, true,1)
-    addImage(cursorOff, 0, canvas.width * 0.01, -wheelBlock.height * 0.45, 0.1, true,1)
-    addImage(lightPart1, 0, 0, 0, 1, true, delta1)
-    addImage(lightPart2, 0, 0, 0, 1, true, delta2)
-    
-    addImage(character, 0, character.height * 0.4,  (canvas.height - character.height) / 2, 1, true,1)
-    
+    //Затухиние и нарастание дополнительных слоев MotionBlur для плавности перехода
     if(isAnimate) {
       if (targetDegree - currentRotation < blurMarker && blurSteps > 1) {
         blurSteps -= 1
@@ -136,15 +113,19 @@ function motion() {
       currentRotation += rotationSpeed
   }
     
-    if (currentRotation <= targetDegree) {
-      requestAnimationFrame(motion)
-    }
+  if (currentRotation <= targetDegree) {
+    requestAnimationFrame(motion)
+  }else {
+    wheelInTaregt() //Остановка колеса
+  }
 }
 
+//Углы в радианы
 function degToRad(degrees) {
   return degrees * (Math.PI / 180)
 }
 
+//Загрузчик изображений
 function loadImage(img) {
   return new Promise((resolve, reject) => {
     img.onload = () => resolve(img)
@@ -152,6 +133,7 @@ function loadImage(img) {
   })
 }
 
+//Загружаем массив картинок и отдаем калбек
 function loadImagesWithCallback(srcArray, callback) {
   let isLoad = false
   let counter = 0;
@@ -171,42 +153,30 @@ function loadImagesWithCallback(srcArray, callback) {
 
 
 
-function addImageWithMotion(image, angle, translateX, translateY, scale, isAnimation, lCurrentRotation) {
-  const imgWidth =  wheelBlock.height * scale
-  const imgHeight =  wheelBlock.height * scale
-
+function addImageWithMotion(image, angle, translateX, translateY, lCurrentRotation) {
   let yAngleInRadians = degToRad(angle) 
   let zAngleInRadians = 0
 
-  //let blurSteps = 20; 
   let blurAlpha = 0.1; 
+  zAngleInRadians = lCurrentRotation
   
-  // Update the rotation angle along the Z-axis
-  if (isAnimation) {
-    //zAngleInRadians = performance.now() / 300
-    zAngleInRadians = lCurrentRotation
-  }else {
-    zAngleInRadians = currentRotation
-  }
-  
-  // Set the perspective transformation with the initial Y-axis rotation
+  // Задаем перспективное изкажение по Y
   const cosY = Math.cos(yAngleInRadians)
-  const sinY = Math.sin(yAngleInRadians)
-
   ctx.save()
+  
+  //Рисуем дополнительные слои для MotionBlur
   for (let i = 0; i < blurSteps; i++) {
     blurAlpha = 1 / i
-    
     ctx.setTransform(
-      cosY,    // a
-      0,       // b (no rotation along the X-axis)
-      0,       // c (no rotation along the Z-axis)
-      1,       // d (no scaling)
-      vanishPointX * (1 - cosY), // e center point
-      vanishPointY,              // f center point
+      cosY,    // Поворот по Y
+      0,       // Поворот по X
+      0,       // Поворот по Z
+      1,       // Маштаб
+      vanishPointX * (1 - cosY), // Центр трансформации по X
+      vanishPointY,              // Центр трансформации по Y
     )
 
-    // Apply the additional Z-axis rotation using the center of the image as the transformation point
+    //Дополнительная трансформации по оси Z
     ctx.translate(vanishPointX + translateX, 0 + translateY )
   
     ctx.rotate(zAngleInRadians - i * 0.01)
@@ -216,20 +186,27 @@ function addImageWithMotion(image, angle, translateX, translateY, scale, isAnima
 
     ctx.drawImage(
       image,
-      vanishPointX - imgWidth / 2,  
-      vanishPointY - imgHeight / 2, 
-      imgWidth,                     
-      imgHeight                     
+      vanishPointX - image.width / 2,  
+      vanishPointY - image.height / 2, 
+      image.width,                     
+      image.height                     
     )
     ctx.restore();
   }
+
     ctx.restore();
-    
 } 
+
+function setScale(image, scale) {
+ image.width = wheelBlock.height * scale
+ image.height = wheelBlock.height * scale
+}
 
 document.addEventListener('DOMContentLoaded', function () {
   document.body.addEventListener('click', function () {
+      setTarget(780)
       isAnimate = true
+      
   });
 });
 
