@@ -127,7 +127,7 @@ function motion(currentTime) {
        progress = Math.min(elapsedTime / duration, 1);
        easedProgress = easeInOutSine(progress);
        currentAngle = startAngle + (targetAngle - startAngle) * easedProgress;
-    console.log(currentAngle)
+       //console.log(easedProgress)
     }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -146,8 +146,8 @@ function motion(currentTime) {
 
     //Затухиние и нарастание дополнительных слоев MotionBlur для плавности перехода
     if(isAnimate) {
-      if (targetDegree - currentRotation < blurMarker && blurSteps > 1) {
-       // blurSteps -= 1
+      if (targetAngle - currentRotation  < blurMarker && blurSteps > 1) {
+        //blurSteps -= 1
         rotationSpeed -= 0.002
       } else if (blurSteps < 20) {
         rotationSpeed += 0.002
@@ -161,6 +161,8 @@ function motion(currentTime) {
    
   if (currentRotation < targetAngle) {
     requestAnimationFrame(motion);
+  }else{
+    wheelInTaregt() //Остановка колеса
   }
   //requestAnimationFrame(motion)
   if (currentRotation <= targetDegree) {
