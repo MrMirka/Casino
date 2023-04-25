@@ -9,7 +9,7 @@ const vanishPointY = canvas.height / 2
 
 const startAngle = 0; // текущий угол
 let targetAngle = degToRad(60); // угол на который нужно повернуть
-const duration = 3000; // продолжительность анимации в миллисекундах
+const duration = 5000; // продолжительность анимации в миллисекундах
 
 
 let imgWheel = new Image()
@@ -127,7 +127,8 @@ function motion(currentTime) {
        progress = Math.min(elapsedTime / duration, 1);
        easedProgress = easeInOutSine(progress);
        currentAngle = startAngle + (targetAngle - startAngle) * easedProgress;
-       //console.log(easedProgress)
+       updateStep(progress);
+       console.log(blurSteps)
     }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -275,5 +276,17 @@ function easeInOut(t) {
 
 function easeInOutSine(t) {
   return -(Math.cos(Math.PI * t) - 1) / 2;
+}
+
+function updateStep(progress) {
+  const decreaseStepProgress = 0.8; // Начать уменьшение значения step после 80% анимации
+  const maxStep = 20;
+
+  if (progress < decreaseStepProgress) {
+    blurSteps = 1 + Math.floor(progress / decreaseStepProgress * (maxStep - 1));
+  } else {
+    const decreaseProgress = (progress - decreaseStepProgress) / (1 - decreaseStepProgress);
+    blurSteps = maxStep - Math.floor(decreaseProgress * (maxStep - 1));
+  }
 }
 
