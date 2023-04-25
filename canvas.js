@@ -6,6 +6,12 @@ canvas.height = window.innerHeight
 const vanishPointX = canvas.width / 2
 const vanishPointY = canvas.height / 2
 
+
+const startAngle = 0; // текущий угол
+const targetAngle = degToRad(1440); // угол на который нужно повернуть
+const duration = 15000; // продолжительность анимации в миллисекундах
+
+
 let imgWheel = new Image()
 let character = new Image()
 let wheelBack = new Image()
@@ -65,8 +71,11 @@ loadImagesWithCallback(imgArray, (isLoad) => {
   setScale(cursorOff, 0.1)
   setScale(lightPart1, 1)
   setScale(lightPart2, 1)
-  motion()
+  staticImg()
+  //motion()
 });
+
+let startTime;
 
 
 function addImage(image, translateX, translateY, globA) {
@@ -86,8 +95,41 @@ function addImage(image, translateX, translateY, globA) {
   )
 } 
 
+function startAnimation() {
+  if (!isAnimate) {
+    startTime = performance.now();
+    isAnimate = true;
+    requestAnimationFrame(motion);
+  }
+}
 
-function motion() {
+function staticImg(){
+  addImage(wheelBack, 0, 0 ,1)
+  addImageWithMotion(imgWheel, 19, 10, 0, currentRotation)
+  addImage(ring, 0, 2, 1)
+  addImage(innerDisk, 10, 0, 1)
+  addImage(cursorOff, canvas.width * 0.01, -wheelBlock.height * 0.45, 1)
+  addImage(lightPart1, 0, 0, 1)
+  addImage(lightPart2, 0, 0, 0)
+  addImage(character, character.height * 0.4,  (canvas.height - character.height) / 2, 1)
+}
+
+function motion(currentTime) {
+  
+  
+  let elapsedTime 
+  let progress 
+  let easedProgress 
+  let currentAngle 
+  
+    if(isAnimate) {
+       elapsedTime = currentTime - startTime;
+       progress = Math.min(elapsedTime / duration, 1);
+       easedProgress = easeInOutSine(progress);
+       currentAngle = startAngle + (targetAngle - startAngle) * easedProgress;
+    console.log(currentAngle)
+    }
+
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     let delta1 = Math.abs(Math.sin(performance.now() / 100)) //Alpha для фонариков
     let delta2 = Math.abs(Math.cos(performance.now() / 100)) //Alpha для фонариков
@@ -105,20 +147,26 @@ function motion() {
     //Затухиние и нарастание дополнительных слоев MotionBlur для плавности перехода
     if(isAnimate) {
       if (targetDegree - currentRotation < blurMarker && blurSteps > 1) {
-        blurSteps -= 1
+       // blurSteps -= 1
         rotationSpeed -= 0.002
       } else if (blurSteps < 20) {
         rotationSpeed += 0.002
-        blurSteps += 1
+        //blurSteps += 1
         blurMarker = blurSteps * rotationSpeed
       }
-      currentRotation += rotationSpeed
+      //currentRotation += rotationSpeed
+      currentRotation = currentAngle
+    }
+
+   
+  if (currentRotation < targetAngle) {
+    requestAnimationFrame(motion);
   }
-    
+  //requestAnimationFrame(motion)
   if (currentRotation <= targetDegree) {
-    requestAnimationFrame(motion)
+    //requestAnimationFrame(motion)
   }else {
-    wheelInTaregt() //Остановка колеса
+    //wheelInTaregt() //Остановка колеса
   }
 }
 
@@ -207,8 +255,23 @@ function setScale(image, scale) {
 document.addEventListener('DOMContentLoaded', function () {
   document.body.addEventListener('click', function () {
       setTarget(420)
-      isAnimate = true
+     //isAnimate = true
+      startAnimation()
       
   });
 });
+
+//Easy in out
+function cubicBezier(p0, p1, p2, p3, t) {
+  const ct = 1 - t;
+  return p0 * ct * ct * ct + 3 * p1 * ct * ct * t + 3 * p2 * ct * t * t + p3 * t * t * t;
+}
+
+function easeInOut(t) {
+  return cubicBezier(0.42, 0, 0.58, 1, t);
+}
+
+function easeInOutSine(t) {
+  return -(Math.cos(Math.PI * t) - 1) / 2;
+}
 
