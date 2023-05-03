@@ -9,7 +9,7 @@ const vanishPointY = canvas.height / 2
 
 const startAngle = 0; // текущий угол
 let targetAngle = degToRad(60); // угол на который нужно повернуть
-const duration = 5000; // продолжительность анимации в миллисекундах
+const duration = 2500; // продолжительность анимации в миллисекундах
 
 
 let imgWheel = new Image()
@@ -257,7 +257,7 @@ function setScale(image, scale) {
 
 document.addEventListener('DOMContentLoaded', function () {
   document.body.addEventListener('click', function () {
-      setTarget(360)
+      setTarget(720)
      //isAnimate = true
       startAnimation()
       
