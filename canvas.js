@@ -7,7 +7,7 @@ const vanishPointX = canvas.width / 2
 const vanishPointY = canvas.height / 2
 
 
-const startAngle = 0; // текущий угол
+let startAngle = 0; // текущий угол
 let targetAngle = degToRad(60); // угол на который нужно повернуть
 const duration = 2500; // продолжительность анимации в миллисекундах
 
@@ -52,6 +52,8 @@ let blurMarker = blurSteps * rotationSpeed
 //Каллбек на остановку колеса
 function wheelInTaregt(){
   console.log("Сектор ПРИЗ на барабане!")
+  startAngle = degToRad(720)
+  isAnimate = false
 }
 
 //Задаем угол вращения
@@ -128,7 +130,6 @@ function motion(currentTime) {
        easedProgress = easeInOutSine(progress);
        currentAngle = startAngle + (targetAngle - startAngle) * easedProgress;
        updateStep(progress);
-       console.log(blurSteps)
     }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -148,11 +149,11 @@ function motion(currentTime) {
     //Затухиние и нарастание дополнительных слоев MotionBlur для плавности перехода
     if(isAnimate) {
       if (targetAngle - currentRotation  < blurMarker && blurSteps > 1) {
-        //blurSteps -= 1
+       
         rotationSpeed -= 0.002
       } else if (blurSteps < 20) {
         rotationSpeed += 0.002
-        //blurSteps += 1
+       
         blurMarker = blurSteps * rotationSpeed
       }
       //currentRotation += rotationSpeed
@@ -257,8 +258,12 @@ function setScale(image, scale) {
 
 document.addEventListener('DOMContentLoaded', function () {
   document.body.addEventListener('click', function () {
-      setTarget(720)
-     //isAnimate = true
+      if(startAngle == 0) {
+        setTarget(720)
+      } else {
+        setTarget(1440)
+      }
+      
       startAnimation()
       
   });
